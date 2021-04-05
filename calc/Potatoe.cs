@@ -40,7 +40,7 @@ namespace calc
 
             dwClientState = Memory.Read<IntPtr>(engine + Offsets.signatures.dwClientState);
 
-            if (ResetPlayers())
+            if (!ResetPlayers())
                 throw new Exception("An error has occurred", new Exception("Could not reset players"));
         }
 
@@ -79,6 +79,7 @@ namespace calc
         {
             player.Update();
 
+            //find a way to put this in the overlay thread
             foreach (var player in players)
             {
                 player.Update();
@@ -109,19 +110,21 @@ namespace calc
                     enemy.Aim = enemy.GetPitchYaw(player.ViewPosition);
                 }
 
-                enemies = enemies.OrderBy(x => Math.Pow(viewAngles.Yaw - x.Aim.Yaw, 2) + Math.Pow(viewAngles.Pitch - x.Aim.Pitch, 2));
+                enemies = enemies.OrderBy(x => Angle.Difference(viewAngles, x.Aim));
 
                 try
                 {
-                    viewAngles = enemies.First().Aim;
+                    if (Angle.Difference(viewAngles, enemies.First().Aim) < 0.2)
+                    {
+                        viewAngles = enemies.First().Aim;
+                        anchor.Zero();
+                    }
                 }
                 catch
                 {
                     //ignored
                     return false;
                 }
-
-                anchor.Zero();
 
                 return true;
             }

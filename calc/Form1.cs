@@ -14,7 +14,6 @@ namespace calc
         Overlays o;
         Thread t;
         Thread g;
-        Thread h;
 
         public static bool b_MouseDown = true;
         public static bool b_KeyboardDown = false;
@@ -26,7 +25,6 @@ namespace calc
             o = new Overlays();
             t = new Thread(Activate);
             g = new Thread(Activate);
-            h = new Thread(Activate);
 
             label1.Text = "Offline.";
         }
@@ -46,29 +44,23 @@ namespace calc
 
             KeyboardHook.Start();
 
+            bool aim = false;
+            bool recoil = false;
+
             g = new Thread(() => 
             {
-                while (true) { 
-                    BigHack.Get();
-                } 
-            });
-            g.Start();
-
-            h = new Thread(() =>
-            {
-                while (true) 
+                while (true)
                 {
-                    bool aim = false;
-                    bool recoil = false;
+                    BigHack.Get();
                     if (checkBox2.Checked && b_KeyboardDown)
                         aim = BigHack.AimBot();
                     if (checkBox3.Checked)
                         recoil = BigHack.AntiRecoil();
                     if ((aim || recoil) && b_MouseDown)
                         BigHack.Set();
-                }
+                } 
             });
-            h.Start();
+            g.Start();
 
             label1.Text = "Online.";
             panel1.Enabled = true;
@@ -148,8 +140,6 @@ namespace calc
                 t.Abort();
             if (g.IsAlive)
                 g.Abort();
-            if (h.IsAlive)
-                h.Abort();
         }
 
         private void helpToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -172,8 +162,6 @@ namespace calc
                 t.Abort();
             if (g.IsAlive)
                 g.Abort();
-            if (h.IsAlive)
-                h.Abort();
         }
 
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
