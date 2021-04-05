@@ -144,7 +144,7 @@ namespace calc
 
         private void helpToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Calculator v2.1\nMade by a handsome lad called Foopy.\nCrashing every 5 min is an intended feature.", "About");
+            MessageBox.Show("Calculator v2.2\nMade by a handsome lad called Foopy.\nCrashing every 5 min is an intended feature.", "About");
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
