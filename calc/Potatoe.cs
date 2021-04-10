@@ -117,33 +117,31 @@ namespace calc
                     if (Angle.Difference(viewAngles, enemies.First().Aim) < 0.2)
                     {
                         viewAngles = enemies.First().Aim;
-                        anchor.Zero();
+                        return true;
                     }
                 }
                 catch
                 {
                     //ignored
-                    return false;
                 }
-
-                return true;
             }
             return false;
         }
 
-        public bool AntiRecoil()
+        public bool AntiRecoil(bool aimed)
         {
             if (player.m_iShotsFired > 1)
             {
-                viewAngles = (viewAngles + anchor - player.m_aimPunchAngle * 2);
+                if (aimed)
+                    viewAngles -= player.m_aimPunchAngle * 2;
+                else
+                    viewAngles += anchor - player.m_aimPunchAngle * 2;
                 anchor = player.m_aimPunchAngle * 2;
-
                 return true;
             }
             else
             {
                 anchor.Zero();
-
                 return false;
             }
         }

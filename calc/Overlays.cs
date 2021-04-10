@@ -12,7 +12,9 @@ namespace calc
 	{
 		private readonly GraphicsWindow Window;
 		private readonly Dictionary<string, SolidBrush> Brushes;
-		
+		private Font font;
+		private Form1 form;
+
 		public Overlays()
 		{
 			Brushes = new Dictionary<string, SolidBrush>();
@@ -38,6 +40,8 @@ namespace calc
 			Brushes["enemy"] = Graphic.CreateSolidBrush(255, 128, 128, 0.7f);
 			Brushes["teammate"] = Graphic.CreateSolidBrush(128, 255, 128, 0.7f);
 
+			font = Graphic.CreateFont("Arial", 64);
+
 			Window.FitTo(Memory.m_iProcess.MainWindowHandle);
 		}
 
@@ -52,6 +56,12 @@ namespace calc
 			gfx.ClearScene();
 			gfx.BeginScene();
 			WallHack(gfx);
+
+			if (b_KeyboardDown)
+				gfx.DrawText(font, Brushes["teammate"], 0, Window.Height / 2, $"Aimbot: On");
+			else
+				gfx.DrawText(font, Brushes["enemy"], 0, Window.Height / 2, $"Aimbot: Off");
+
 			gfx.EndScene();
 		}
 

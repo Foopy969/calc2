@@ -4,6 +4,8 @@ namespace calc
 {
     public struct Angle
     {
+        static double toRadian = Math.PI / 180;
+
         public float Pitch { get; set; }
         public float Yaw { get; set; }
 
@@ -54,15 +56,19 @@ namespace calc
 
         public static double Difference(Angle a, Angle b)
         {
-            double pitchCos = Math.Cos(a.Pitch * Math.PI / 180) - Math.Cos(b.Pitch * Math.PI / 180);
-            double pitchSin = Math.Sin(a.Pitch * Math.PI / 180) - Math.Sin(b.Pitch * Math.PI / 180);
-            double pitchDiff = Math.Sqrt(pitchCos * pitchCos + pitchSin * pitchSin);
+            double aPitchRadian = a.Pitch * toRadian;
+            double bPitchRadian = b.Pitch * toRadian;
 
-            double yawCos = Math.Cos(a.Yaw * Math.PI / 180) - Math.Cos(b.Yaw * Math.PI / 180);
-            double yawSin = Math.Sin(a.Yaw * Math.PI / 180) - Math.Sin(b.Yaw * Math.PI / 180);
-            double yawDiff = Math.Sqrt(yawCos * yawCos + yawSin * yawSin);
+            double aYawRadian = a.Yaw * toRadian;
+            double bYawRadian = b.Yaw * toRadian;
 
-            return Math.Sqrt(pitchDiff * pitchDiff + yawDiff * yawDiff);
+            double pitchCos = Math.Cos(aPitchRadian) - Math.Cos(bPitchRadian);
+            double pitchSin = Math.Sin(aPitchRadian) - Math.Sin(bPitchRadian);
+
+            double yawCos = Math.Cos(aYawRadian) - Math.Cos(bYawRadian);
+            double yawSin = Math.Sin(aYawRadian) - Math.Sin(bYawRadian);
+
+            return Math.Sqrt(Math.Abs(pitchCos * pitchCos + pitchSin * pitchSin) + Math.Abs(yawCos * yawCos + yawSin * yawSin));
         }
 
         public void Zero()

@@ -55,7 +55,7 @@ namespace calc
                     if (checkBox2.Checked && b_KeyboardDown)
                         aim = BigHack.AimBot();
                     if (checkBox3.Checked)
-                        recoil = BigHack.AntiRecoil();
+                        recoil = BigHack.AntiRecoil(aim);
                     if ((aim || recoil) && b_MouseDown)
                         BigHack.Set();
                 } 
@@ -144,7 +144,7 @@ namespace calc
 
         private void helpToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Calculator v2.2\nMade by a handsome lad called Foopy.\nCrashing every 5 min is an intended feature.", "About");
+            MessageBox.Show("Calculator v2.3a\nMade by a handsome lad called Foopy.\nCrashing every 5 min is an intended feature.", "About");
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -180,6 +180,11 @@ namespace calc
             BigHack.ResetPlayers();
         }
 
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            b_KeyboardDown = false;
+        }
+
         private void checkBox4_CheckedChanged(object sender, EventArgs e)
         {
             deathmatch_clock.Enabled = checkBox4.Checked;
@@ -198,5 +203,7 @@ namespace calc
                 MouseHook.Stop();
             }
         }
+
+        
     }
 }
