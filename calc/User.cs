@@ -15,8 +15,8 @@ namespace calc
         public int Team { get; }
         public IntPtr Address { get; set; }
         public Vector3 ViewPosition { get; set; }
-        public Angle m_aimPunchAngle { get; set; }
-        public int m_iShotsFired { get; set; }
+        public Angle AimPunchAngle { get; set; }
+        public int ShotsFired { get; set; }
 
         public User(IntPtr address)
         {
@@ -28,8 +28,8 @@ namespace calc
         {
             ViewPosition = Memory.Read<Vector3>(Address + Offsets.netvars.m_vecOrigin) + Memory.Read<Vector3>(Address + Offsets.netvars.m_vecViewOffset);
 
-            m_aimPunchAngle = Memory.Read<Angle>(Address + Offsets.netvars.m_aimPunchAngle);
-            m_iShotsFired = Memory.Read<int>(Address + Offsets.netvars.m_iShotsFired);
+            AimPunchAngle = Memory.Read<Angle>(Address + Offsets.netvars.m_aimPunchAngle);
+            ShotsFired = Memory.Read<int>(Address + Offsets.netvars.m_iShotsFired);
         }
     }
 }

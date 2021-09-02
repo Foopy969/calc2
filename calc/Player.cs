@@ -9,44 +9,44 @@ namespace calc
 {
     public class Player
     {
-        private const int MAXSTUDIOBONES = 128;
-        private const int BONE_USED_BY_HITBOX = 0x100;
+        const double RAD2DEGREE = 180 / Math.PI;
+        const int MAXSTUDIOBONES = 128;
+        const int BONE_USED_BY_HITBOX = 0x100;
+
+        IntPtr address;
+        IntPtr boneMatrix;
+
+        public (int, int)[] SkeletonIdx;
+        public Vector3[] SkeletonPos;
 
         public int Team { get; set; }
-        public IntPtr Address { get; set; }
-        public IntPtr BoneMatrix { get; set; }
-        public Vector3 HeadPosition { get; set; }
-        public Angle Aim { get; set; }
-        public double Distance { get; set; }
-        public (int, int)[] Skeleton;
-        public (Vector3, Vector3)[] SkeletonPos;
 
-        public Player(IntPtr address)
+        public Player(IntPtr _address)
         {
-            Address = address;
-            Team = Memory.Read<int>(Address + Offsets.netvars.m_iTeamNum);
+            address = _address;
+            Team = Memory.Read<int>(address + Offsets.netvars.m_iTeamNum);
 
-            BoneMatrix = Memory.Read<IntPtr>(Address + Offsets.netvars.m_dwBoneMatrix);
-            Skeleton = GetSkeleton().ToArray();
-            SkeletonPos = new (Vector3, Vector3)[Skeleton.Length];
+            boneMatrix = Memory.Read<IntPtr>(address + Offsets.netvars.m_dwBoneMatrix);
+            SkeletonIdx = GetSkeleton().ToArray();
+            SkeletonPos = new Vector3[MAXSTUDIOBONES];
         }
 
         public void Update()
         {
-            for (int i = 0; i < Skeleton.Length; i++)
+            for (int i = 0; i < MAXSTUDIOBONES; i++)
             {
-                SkeletonPos[i] = (GetBonePos(Skeleton[i].Item1), GetBonePos(Skeleton[i].Item2));
+                SkeletonPos[i] = GetBonePos(i);
             }
         }
 
         public bool IsAlive()
         {
-            return Memory.Read<int>(Address + Offsets.netvars.m_iHealth) > 0 && !Memory.Read<bool>(Address + Offsets.signatures.m_bDormant);
+            return Memory.Read<int>(address + Offsets.netvars.m_iHealth) > 0 && !Memory.Read<bool>(address + Offsets.signatures.m_bDormant);
         }
 
         public IEnumerable<(int, int)> GetSkeleton()
         {
-            IntPtr addressStudioHdr = Memory.Read<IntPtr>(Memory.Read<IntPtr>(Address + Offsets.signatures.m_pStudioHdr));
+            IntPtr addressStudioHdr = Memory.Read<IntPtr>(Memory.Read<IntPtr>(address + Offsets.signatures.m_pStudioHdr));
             studiohdr_t studioHdr = Memory.Read<studiohdr_t>(addressStudioHdr);
 
             for (int i = 0; i < studioHdr.numbones; i++)
@@ -65,25 +65,19 @@ namespace calc
 
         public unsafe Vector3 GetBonePos(int i)
         {
-            matrix3x4_t bones = Memory.Read<matrix3x4_t>(BoneMatrix + 0x30 * i);
+            matrix3x4_t bones = Memory.Read<matrix3x4_t>(boneMatrix + 0x30 * i);
             return new Vector3(bones.m[3], bones.m[7], bones.m[11]);
         }
 
-        public double CalDistance(Vector3 Target)
+        public float GetRank(Vector3 position, Vector3 vector)
         {
-            Vector3 Delta = HeadPosition - Target;
-            return Math.Sqrt(Delta.X * Delta.X + Delta.Y * Delta.Y + Delta.Z * Delta.Z);
+            return Vector3.Dot(vector, Vector3.Normalize(SkeletonPos[8] - position));
         }
 
-        public Angle GetPitchYaw(Vector3 Target)
+        public Angle GetAim(Vector3 target)
         {
-            Vector3 Delta = HeadPosition - Target;
-            return new Angle(-Math.Asin(Delta.Z / Distance) * (180 / Math.PI), Math.Atan2(Delta.Y, Delta.X) * (180 / Math.PI));
-        }
-
-        public bool GetSpotted(int id)
-        {
-            return 0 < (Memory.Read<int>(Address + Offsets.netvars.m_bSpottedByMask) & (1 << id));
+            Vector3 delta = SkeletonPos[8] - target;
+            return new Angle(-Math.Asin(delta.Z / delta.Length()) * RAD2DEGREE, Math.Atan2(delta.Y, delta.X) * RAD2DEGREE);
         }
     }
 }

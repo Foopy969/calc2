@@ -1,24 +1,25 @@
 ﻿using System;
+using System.Numerics;
 
 namespace calc
 {
     public struct Angle
     {
-        static double toRadian = Math.PI / 180;
+        const double DEGREE2RAD = -Math.PI / 180f;
 
         public float Pitch { get; set; }
         public float Yaw { get; set; }
 
-        public Angle(float _Pitch, float _Yaw)
+        public Angle(float pitch, float yaw)
         {
-            Pitch = _Pitch;
-            Yaw = _Yaw;
+            Pitch = pitch;
+            Yaw = yaw;
         }
 
-        public Angle(double _Pitch, double _Yaw)
+        public Angle(double pitch, double yaw)
         {
-            Pitch = (float)_Pitch;
-            Yaw = (float)_Yaw;
+            Pitch = (float)pitch;
+            Yaw = (float)yaw;
         }
 
         public void Absolute()
@@ -54,27 +55,17 @@ namespace calc
             }
         }
 
-        public static double Difference(Angle a, Angle b)
-        {
-            double aPitchRadian = a.Pitch * toRadian;
-            double bPitchRadian = b.Pitch * toRadian;
-
-            double aYawRadian = a.Yaw * toRadian;
-            double bYawRadian = b.Yaw * toRadian;
-
-            double pitchCos = Math.Cos(aPitchRadian) - Math.Cos(bPitchRadian);
-            double pitchSin = Math.Sin(aPitchRadian) - Math.Sin(bPitchRadian);
-
-            double yawCos = Math.Cos(aYawRadian) - Math.Cos(bYawRadian);
-            double yawSin = Math.Sin(aYawRadian) - Math.Sin(bYawRadian);
-
-            return Math.Sqrt(Math.Abs(pitchCos * pitchCos + pitchSin * pitchSin) + Math.Abs(yawCos * yawCos + yawSin * yawSin));
-        }
-
         public void Zero()
         {
             Yaw = 0;
             Pitch = 0;
+        }
+
+        public Vector3 ToVector3()
+        {
+            double pitchInRad = Pitch * DEGREE2RAD;
+            double yawInRad = Yaw * DEGREE2RAD;
+            return new Vector3((float)(Math.Cos(pitchInRad) * Math.Cos(yawInRad)), -(float)(Math.Cos(pitchInRad) * Math.Sin(yawInRad)), (float)Math.Sin(pitchInRad));
         }
 
         public static Angle operator +(Angle a, Angle b)

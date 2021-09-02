@@ -70,16 +70,16 @@ namespace calc
 			Vector3 vTemp1;
 			Vector3 vTemp2;
 
-			fixed (float* matrix = BigHack.dwViewMatrix.m)
+			fixed (float* matrix = BigHack.ViewMatrix.m)
 			{
 				foreach (var player in BigHack.players)
 				{
 					if (!player.IsAlive()) continue;
 
-					foreach ((Vector3 A, Vector3 B) line in player.SkeletonPos)
+					foreach ((int A, int B) line in player.SkeletonIdx)
 					{
-						vTemp1 = line.A;
-						vTemp2 = line.B;
+						vTemp1 = player.SkeletonPos[line.A];
+						vTemp2 = player.SkeletonPos[line.B];
 
 						if (WorldToScreen(matrix, Window.Height, Window.Width, ref vTemp1) && WorldToScreen(matrix, Window.Height, Window.Width, ref vTemp2))
 						{
