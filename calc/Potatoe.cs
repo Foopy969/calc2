@@ -103,12 +103,17 @@ namespace calc
             var enemies = players.Where(x => x.Team != player.Team && x.IsAlive());
             if (enemies.Any())
             {
-                try
+                var enemy = enemies.OrderBy(x => x.GetRank(player.ViewPosition, viewAngles.ToVector3())).Last();
+
+                if (enemy.Rank > 1)
                 {
-                    viewAngles = enemies.OrderBy(x => x.GetRank(player.ViewPosition, viewAngles.ToVector3())).Last().GetAim(player.ViewPosition);
-                    return true;
+                    try
+                    {
+                        viewAngles = enemy.GetAim(player.ViewPosition);
+                        return true;
+                    }
+                    catch { }
                 }
-                catch { }
             }
             return false;
         }

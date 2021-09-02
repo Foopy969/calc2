@@ -18,6 +18,7 @@ namespace calc
 
         public (int, int)[] SkeletonIdx;
         public Vector3[] SkeletonPos;
+        public float Rank;
 
         public int Team { get; set; }
 
@@ -71,7 +72,8 @@ namespace calc
 
         public float GetRank(Vector3 position, Vector3 vector)
         {
-            return Vector3.Dot(vector, Vector3.Normalize(SkeletonPos[8] - position));
+            Rank = Vector3.Dot(vector, Vector3.Normalize(SkeletonPos[8] - position));
+            return Rank;
         }
 
         public Angle GetAim(Vector3 target)
